@@ -1,39 +1,39 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Train_Consist_Management_App {
 
     public static void main(String[] args) {
 
         System.out.println("======================================");
-        System.out.println("   UC2 - Add Passenger Bogies to Train");
+        System.out.println("   UC3 - Track Unique Bogie IDs");
         System.out.println("======================================");
 
-        // Create ArrayList
-        List<String> passengerBogies = new ArrayList<>();
+        // Initialize HashSet
+        Set<String> bogieIds = new HashSet<>();
 
-        // Add bogies
-        passengerBogies.add("Sleeper");
-        passengerBogies.add("AC Chair");
-        passengerBogies.add("First Class");
+        // Add bogie IDs
+        bogieIds.add("BG101");
+        bogieIds.add("BG102");
+        bogieIds.add("BG103");
 
-        System.out.println("\nAfter Adding Bogies:");
-        System.out.println("Passenger Bogies : " + passengerBogies);
+        System.out.println("\nAfter Adding Bogie IDs:");
+        System.out.println("Bogie IDs : " + bogieIds);
 
-        // Remove "AC Chair"
-        passengerBogies.remove("AC Chair");
+        // Try adding duplicate
+        System.out.println("\nAttempting to add duplicate 'BG101':");
+        boolean added = bogieIds.add("BG101");
 
-        System.out.println("\nAfter Removing 'AC Chair':");
-        System.out.println("Passenger Bogies : " + passengerBogies);
+        System.out.println("Was duplicate added? : " + added);
 
-        // Check if "Sleeper" exists
-        System.out.println("\nChecking if 'Sleeper' exists:");
-        System.out.println("Contains Sleeper? : " + passengerBogies.contains("Sleeper"));
+        // Check existence
+        System.out.println("\nChecking if 'BG102' exists:");
+        System.out.println("Contains BG102? : " + bogieIds.contains("BG102"));
 
-        // Final state
-        System.out.println("\nFinal Train Passenger Consist:");
-        System.out.println(passengerBogies);
+        // Final output
+        System.out.println("\nFinal Unique Bogie IDs:");
+        System.out.println(bogieIds);
 
-        System.out.println("\nUC2 operations completed successfully...");
+        System.out.println("\nUC3 operations completed successfully...");
     }
 }
