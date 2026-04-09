@@ -1,57 +1,56 @@
-// Custom Exception for domain-specific error handling
-class InvalidCapacityException extends Exception {
-    public InvalidCapacityException(String message) {
+// 1. Custom Runtime Exception for Cargo Safety
+class CargoSafetyException extends RuntimeException {
+    public CargoSafetyException(String message) {
         super(message);
     }
 }
 
-// Passenger Bogie class with Fail-Fast validation logic
-class PassengerBogie {
-    private String type;
-    private int capacity;
+class GoodsBogie {
+    private String shape;
+    private String cargoType;
 
-    public PassengerBogie(String type, int capacity) throws InvalidCapacityException {
-        // Business Rule: Capacity must be > 0
-        if (capacity <= 0) {
-            throw new InvalidCapacityException("Capacity must be greater than zero");
-        }
-        this.type = type;
-        this.capacity = capacity;
+    public GoodsBogie(String shape) {
+        this.shape = shape;
     }
 
-    @Override
-    public String toString() {
-        return "Bogie Type: " + type + ", Capacity: " + capacity;
+    // 2. Logic to validate and assign cargo
+    public void assignCargo(String cargo) {
+        System.out.println("Attempting to assign " + cargo + " to a " + shape + " bogie...");
+
+        try {
+            // Check for unsafe combination: Petroleum in Rectangular bogie
+            if (shape.equalsIgnoreCase("Rectangular") && cargo.equalsIgnoreCase("Petroleum")) {
+                throw new CargoSafetyException("SAFETY VIOLATION: Cannot assign Petroleum to a Rectangular bogie!");
+            }
+
+            this.cargoType = cargo;
+            System.out.println("SUCCESS: " + cargo + " assigned successfully.");
+
+        } catch (CargoSafetyException e) {
+            // 3. Catch the exception and display error
+            System.err.println("CATCH BLOCK: " + e.getMessage());
+
+        } finally {
+            // 4. Finally block for cleanup/logging [cite: 1]
+            System.out.println("FINALLY BLOCK: Cargo assignment validation process completed.");
+            System.out.println("--------------------------------------------------");
+        }
     }
 }
 
-// Main Application to demonstrate the Use Case scenarios
 public class Train_Consist_Management_App {
     public static void main(String[] args) {
-        System.out.println("--- Train Consist Management App: UC14 ---");
+        System.out.println("--- Train Consist Management App: UC15 ---");
 
-        // Scenario 1: Valid Capacity
-        try {
-            PassengerBogie sleeper = new PassengerBogie("Sleeper", 72);
-            System.out.println("SUCCESS: " + sleeper);
-        } catch (InvalidCapacityException e) {
-            System.out.println("ERROR: " + e.getMessage());
-        }
+        // Test Case 1: Safe Assignment (Cylindrical + Petroleum) [cite: 1]
+        GoodsBogie cylindricalBogie = new GoodsBogie("Cylindrical");
+        cylindricalBogie.assignCargo("Petroleum");
 
-        // Scenario 2: Negative Capacity (Expected to fail)
-        try {
-            System.out.println("\nAttempting to create bogie with capacity -10...");
-            PassengerBogie invalidBogie = new PassengerBogie("AC Chair", -10);
-        } catch (InvalidCapacityException e) {
-            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
-        }
+        // Test Case 2: Unsafe Assignment (Rectangular + Petroleum) [cite: 1]
+        GoodsBogie rectangularBogie = new GoodsBogie("Rectangular");
+        rectangularBogie.assignCargo("Petroleum");
 
-        // Scenario 3: Zero Capacity (Expected to fail)
-        try {
-            System.out.println("\nAttempting to create bogie with capacity 0...");
-            PassengerBogie zeroBogie = new PassengerBogie("First Class", 0);
-        } catch (InvalidCapacityException e) {
-            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
-        }
+        // Test Case 3: Program continuation [cite: 1]
+        System.out.println("Program continues to run safely after handling exceptions.");
     }
 }
