@@ -1,48 +1,59 @@
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-class GoodsBogie {
+class Bogie {
     String type;
-    String cargo;
+    int capacity;
 
-    public GoodsBogie(String type, String cargo) {
+    public Bogie(String type, int capacity) {
         this.type = type;
-        this.cargo = cargo;
+        this.capacity = capacity;
     }
 
-    public String getType() { return type; }
-    public String getCargo() { return cargo; }
+    public int getCapacity() {
+        return capacity;
+    }
 }
 
-public class Train_Consist_Management_App {
+public class PerformanceComparisonApp {
     public static void main(String[] args) {
-        // 1. User prepares a list of goods bogies
-        List<GoodsBogie> goodsBogies = Arrays.asList(
-                new GoodsBogie("Cylindrical", "Petroleum"),
-                new GoodsBogie("Rectangular", "Coal"),
-                new GoodsBogie("Cylindrical", "Petroleum"),
-                new GoodsBogie("Open", "Grain")
-        );
+        // 1. Prepare a collection of bogies
+        List<Bogie> bogies = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            bogies.add(new Bogie("Passenger", i % 100));
+        }
 
-        // 2. System converts the list into a stream
-        // 3. allMatch() checks every bogie against safety rules
-        // 4. Conditional logic verifies cylindrical bogie cargo (Cylindrical -> only Petroleum) [cite: 1]
-        boolean isSafe = goodsBogies.stream()
-                .allMatch(bogie -> {
-                    if (bogie.getType().equalsIgnoreCase("Cylindrical")) {
-                        return bogie.getCargo().equalsIgnoreCase("Petroleum");
-                    }
-                    return true; // Non-cylindrical bogies pass this specific rule [cite: 1]
-                });
+        System.out.println("--- Performance Comparison (Loops vs Streams) ---");
 
-        // 5. If all checks pass, the train is marked safe [cite: 1]
-        // 6. Result is displayed to the user [cite: 1]
-        if (isSafe) {
-            System.out.println("Validation Result: true");
-            System.out.println("The train is safety compliant.");
-        } else {
-            System.out.println("Validation Result: false");
-            System.out.println("The train is NOT safety compliant. Rule Violation: Cylindrical bogies must only carry Petroleum.");
+        // 2. Loop-Based Filtering
+        long startLoop = System.nanoTime(); // Record start time
+        List<Bogie> filteredLoop = new ArrayList<>();
+        for (Bogie b : bogies) {
+            if (b.getCapacity() > 60) {
+                filteredLoop.add(b);
+            }
+        }
+        long endLoop = System.nanoTime(); // Record end time
+        long durationLoop = endLoop - startLoop; // Calculate elapsed time [cite: 1]
+
+        // 3. Stream-Based Filtering [cite: 1]
+        long startStream = System.nanoTime();
+        List<Bogie> filteredStream = bogies.stream()
+                .filter(b -> b.getCapacity() > 60)
+                .collect(Collectors.toList());
+        long endStream = System.nanoTime();
+        long durationStream = endStream - startStream;
+
+        // 4. Display Execution Time and Consistency [cite: 1]
+        System.out.println("Loop Filtered Count: " + filteredLoop.size());
+        System.out.println("Loop Execution Time: " + durationLoop + " nanoseconds");
+
+        System.out.println("Stream Filtered Count: " + filteredStream.size());
+        System.out.println("Stream Execution Time: " + durationStream + " nanoseconds");
+
+        if (filteredLoop.size() == filteredStream.size()) {
+            System.out.println("Result Consistency: PASSED (Both results match)");
         }
     }
 }
